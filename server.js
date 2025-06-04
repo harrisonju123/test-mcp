@@ -93,11 +93,7 @@ server.addTool(RequestReissueDef);
 (async () => {
     try {
         await server.start({
-            transportType: "sse",          // Use SSE (Server-Sent Events)  [oai_citation:2‡stackoverflow.com](https://stackoverflow.com/questions/79607756/fastmcp-sse-port-control?utm_source=chatgpt.com)
-            sse: {
-                endpoint: "/mcp",            // exposes MCP at /mcp
-                port: 3001,
-            },
+            transportType: "stdio",          // Use SSE (Server-Sent Events)  [oai_citation:2‡stackoverflow.com](https://stackoverflow.com/questions/79607756/fastmcp-sse-port-control?utm_source=chatgpt.com)
             cors: true,
         });
         console.log("✅ Fast MCP server running at http://localhost:3001/mcp");
