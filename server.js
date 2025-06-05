@@ -15,20 +15,6 @@ const stripe = new Stripe(process.env.STRIPE_SECRET, {
 
 // 2) Define each tool’s input/output schema and implementation
 
-// --- HelloWorld ---
-/**
- * Input:  {}
- * Output: { text: string }
- */
-const HelloWorldDef = {
-    name: "HelloWorld",
-    description: "Returns a simple hello-world message.",
-    parameters: z.object({}),            // no inputs
-    execute: async () => {
-        return { text: "hello world" };
-    },
-};
-
 // --- GetPaymentStatus ---
 /**
  * Input:  { employee_id: string }
@@ -83,9 +69,9 @@ const RequestReissueDef = {
         try {
             const transfer = await stripe.transfers.create({
                 amount: 100,
-                current: "usd",
+                currency: "usd",
                 destination: "acct_1RWPJjIGTGjF0zRa",
-            })
+            });
 
             return {
                 status: "reissue_requested",
@@ -101,7 +87,6 @@ const RequestReissueDef = {
 };
 
 // 3) Register each tool with the Fast MCP server
-server.addTool(HelloWorldDef);
 server.addTool(GetPaymentStatusDef);
 server.addTool(GetClearingStatusDef);
 server.addTool(RequestReissueDef);
