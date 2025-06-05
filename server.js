@@ -1,11 +1,16 @@
 // mcp-server.js
 import {FastMCP} from "fastmcp";   // Fast MCP framework (v1.x)  [oai_citation:0‡stackoverflow.com](https://stackoverflow.com/questions/79607756/fastmcp-sse-port-control?utm_source=chatgpt.com) [oai_citation:1‡github.com](https://github.com/punkpeye/fastmcp?utm_source=chatgpt.com)
-import { z } from "zod";         // Zod schemas for input/output
+import { z } from "zod";
+import Stripe from "stripe";
 
 // 1) Create a new Fast MCP server instance
 const server = new FastMCP({
     name: "PaymentStatusMCP",
     version: "1.0.0",
+});
+
+const stripe = new Stripe(process.env.STRIPE_SECRET, {
+    apiVersion: "2022-11-15",
 });
 
 // 2) Define each tool’s input/output schema and implementation
@@ -75,11 +80,23 @@ const RequestReissueDef = {
     description: "Request a payment reissue via ops.",
     parameters: z.object({}),            // no inputs
     execute: async () => {
-        // Dummy logic—pretend we asked Ops to reissue
-        return {
-            status: "reissue_requested",
-            request_id: "ops456",
-        };
+        try {
+            const transfer = await stripe.transfers.create({
+                amount: 100,
+                current: "usd",
+                destination: "acct_1RWPJjIGTGjF0zRa",
+            })
+
+            return {
+                status: "reissue_requested",
+                request_id: "ops456",
+            };
+        } catch (err ) {
+            console.error("stripe transfer failed", err)
+            return {
+                status: "failed",
+            }
+        }
     },
 };
 
